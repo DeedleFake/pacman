@@ -18,7 +18,7 @@ type Parser struct {
 
 func New(r io.Reader) *Parser {
 	return &Parser{
-		r:   bufio.NewReader(&eofReader{r: r}),
+		r:   bufio.NewReader(r),
 		buf: make([]rune, 0, 128),
 	}
 }
