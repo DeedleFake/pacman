@@ -7,7 +7,7 @@ import (
 )
 
 func TestParser(t *testing.T) {
-	const file = `%NAME%
+	const file = `%NAME% This shouldn't be here.
 pacman
 
 %VERSION%

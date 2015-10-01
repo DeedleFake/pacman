@@ -77,7 +77,7 @@ func (p *Parser) header() state {
 
 	if r == '%' {
 		p.tok = Header(p.buf)
-		return nil
+		return p.finishline
 	}
 
 	p.buf = append(p.buf, r)
@@ -100,6 +100,20 @@ func (p *Parser) entry() state {
 	p.buf = append(p.buf, r)
 
 	return p.entry
+}
+
+func (p *Parser) finishline() state {
+	r, _, err := p.r.ReadRune()
+	if err != nil {
+		p.err = err
+		return nil
+	}
+
+	if r == '\n' {
+		return nil
+	}
+
+	return p.finishline
 }
 
 type Token interface{}
