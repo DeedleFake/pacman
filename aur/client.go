@@ -44,7 +44,32 @@ func (c *Client) get(data interface{}, t string, a ...string) error {
 	defer rsp.Body.Close()
 
 	d := json.NewDecoder(rsp.Body)
-	return d.Decode(data)
+
+	var raw json.RawMessage
+	err = d.Decode(&raw)
+	if err != nil {
+		return err
+	}
+
+	var rs struct {
+		Type    string          `json:"type"`
+		Results json.RawMessage `json:"results"`
+	}
+	err = json.Unmarshal(raw, &rs)
+	if err != nil {
+		return err
+	}
+	if rs.Type == "error" {
+		var e Error
+		err = json.Unmarshal(rs.Results, &e)
+		if err != nil {
+			return err
+		}
+
+		return e
+	}
+
+	return json.Unmarshal(raw, data)
 }
 
 func Search(name string) ([]*PkgInfo, error) {
@@ -139,4 +164,10 @@ type PkgInfo struct {
 	URLPath        string
 	CategoryID     int
 	Popularity     float64
+}
+
+type Error string
+
+func (err Error) Error() string {
+	return "RPC Error: " + string(err)
 }
