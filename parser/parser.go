@@ -12,8 +12,6 @@ type Parser struct {
 	r   *bufio.Reader
 	buf []rune
 
-	sec string
-
 	tok Token
 	err error
 }
